@@ -1,0 +1,46 @@
+================================================================================
+  MARKA KÖPRÜSÜ — YAYINA ATILACAK PAKET (masaüstü, ayrı klasör)
+================================================================================
+
+Bu klasördeki dosyaları OLDUĞU GİBİ bir hostinge veya GitHub Pages’e atın.
+Kaynak projedeki "marka-portal" ile aynıdır; karışıklık olmaması için masaüstünde
+ayrı kopyalandı.
+
+İçindekiler
+-----------
+  index.html         Ana köprü (kartlar — hangi siteye gidilecekse)
+  404.html           index ile aynı; yanlış URL girilince yine köprü açılır
+  kocaeli.html       Kocaeli Seni Dinliyorum (css/, js/ ile; API ayrı sunucuda)
+  market.html        Örnek market sayfası
+  sifre-sifirla.html Şifre sıfırlama (e-posta linki; yalnızca Node ile API çalışır)
+  css/kocaeli.css    Kocaeli modülü stilleri
+  js/kocaeli-page.js Kocaeli modülü betiği
+  .nojekyll          GitHub Pages için (Jekyll devre dışı)
+  GITHUB-PAGES.txt   Kısa GitHub notu
+  package.json       "npm start" -> node server.js
+  server.js          Kökteki HTML/CSS/JS dosyalarını sunan yerel sunucu (Node)
+
+GitHub Pages
+------------
+1) Yeni repo oluşturun veya mevcut repoya bu klasörün İÇERİĞİNİ köke yükleyin.
+2) Settings → Pages → Branch: main, folder: / (root)
+3) Site birkaç dakika içinde https://kullaniciadi.github.io/repo-adı/ adresinde açılır.
+
+Önemli
+------
+• Bu paket STATİKTİR. kocaeli, market, şifre sayfalarındaki /api/v1/... istekleri
+  GitHub Pages’te çalışmaz (kocaeli: açık bilgi mesajı; şifre: form kilitli).
+  Kartlardaki DIŞ linkler (kocahup41.com vb.) açılır; yerelde PLATFORM-BASLAT ile
+  tüm modüller API ile birlikte çalışır.
+
+• Marka eklemek / link değiştirmek: index.html dosyasını düzenleyin, PORTAL_BRANDS
+  listesini bulun (script içinde).
+
+• Güncel kopya isterseniz: "yazılım dosyarı hazır\marka-portal" klasörünü tekrar
+  bu masaüstü klasörünün üzerine kopyalayabilirsiniz.
+
+Yerel Node ile tam özellik (API + köprü)
+----------------------------------------
+Kaynak: "yazılım dosyarı hazır" → PLATFORM-BASLAT.bat → http://localhost:3000/
+
+================================================================================

@@ -1,0 +1,12 @@
+Render Web Service — bu hata sürerse PANELI kontrol edin
+
+1) Settings -> Build & Deploy -> Root Directory
+   ALAN TAMAMEN BOS OLMALI. "src" YAZMAYIN. (Eski hata: src/package.json aranmasi)
+
+2) Build command:  npm install   (yoksa) veya: echo ok
+3) Start command:  node server.js   veya: npm start
+4) Environment:   PORT = Render verir; elle yazmayin.
+
+5) Kök: package.json + server.js; ekstra npm paketi yok.
+
+================================================================================
