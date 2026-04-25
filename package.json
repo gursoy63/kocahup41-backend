@@ -2,13 +2,11 @@
   "name": "marka-kopru",
   "version": "1.0.0",
   "private": true,
-  "description": "Statik koprü — tek package.json (kök). Render: Root boş, Build: npm install, Start: npm start",
-  "dependencies": {
-    "serve": "^14.2.4"
-  },
+  "description": "Statik koprü — server.js. Render: Root boş, Build: npm install, Start: node server.js veya npm start",
+  "main": "server.js",
   "scripts": {
-    "start": "serve -s . -l $PORT",
-    "start:local": "serve -s . -l 3000"
+    "start": "node server.js",
+    "start:local": "node server.js"
   },
   "engines": {
     "node": ">=18"
