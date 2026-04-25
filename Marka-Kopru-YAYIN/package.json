@@ -1,0 +1,11 @@
+{
+  "name": "marka-kopru",
+  "private": true,
+  "scripts": {
+    "start": "npm start --prefix ./src",
+    "postinstall": "npm install --prefix ./src"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
