@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Kocahup41, DoğruBul, Evleniyorum, Luxor.style ve Kocaelispor — tek köprüden seçim."
+    />
+    <title>Markalar — giriş portalı (köprü)</title>
+    <style>
+      :root {
+        --bg: #080c10;
+        --bg-elevated: #0f151c;
+        --text: #e8eef5;
+        --text-muted: #8b9cb0;
+        --border: rgba(255, 255, 255, 0.08);
+        --glow: rgba(100, 180, 255, 0.12);
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+          sans-serif;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--text);
+        background: var(--bg);
+        background-image:
+          radial-gradient(ellipse 120% 80% at 50% -20%, var(--glow), transparent),
+          radial-gradient(ellipse 60% 40% at 100% 50%, rgba(202, 138, 4, 0.06), transparent);
+        line-height: 1.5;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .page {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 3vw, 2rem) 4rem;
+      }
+
+      .hero {
+        text-align: center;
+        margin-bottom: clamp(2rem, 5vw, 3.5rem);
+      }
+
+      .hero__label {
+        display: inline-block;
+        font-size: 0.75rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 0.75rem;
+      }
+
+      .hero__title {
+        font-weight: 700;
+        font-size: clamp(1.75rem, 5vw, 2.5rem);
+        letter-spacing: -0.03em;
+        margin: 0 0 0.75rem;
+        line-height: 1.15;
+      }
+
+      .hero__lead {
+        margin: 0 auto;
+        max-width: 40ch;
+        color: var(--text-muted);
+        font-size: 1.05rem;
+      }
+
+      .brand-grid {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: 1fr;
+      }
+
+      @media (min-width: 540px) {
+        .brand-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (min-width: 860px) {
+        .brand-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1.125rem;
+        }
+      }
+
+      .brand-card {
+        --accent: #64748b;
+        --accent-soft: rgba(100, 116, 139, 0.35);
+        --accent-bg: rgba(100, 116, 139, 0.2);
+        border-radius: 1rem;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border);
+        overflow: hidden;
+        transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.25s ease;
+      }
+
+      .brand-card:hover {
+        transform: translateY(-2px);
+        border-color: var(--accent-soft);
+        box-shadow: 0 0 0 1px var(--accent-soft), 0 20px 40px -24px rgba(0, 0, 0, 0.5);
+      }
+
+      .brand-card:focus-within {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+      }
+
+      .brand-card__link {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1.25rem 1.35rem;
+        text-decoration: none;
+        color: inherit;
+        min-height: 5.5rem;
+      }
+
+      .brand-card__icon {
+        flex-shrink: 0;
+        width: 3rem;
+        height: 3rem;
+        border-radius: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.15rem;
+        background: var(--accent-bg);
+        color: var(--accent);
+        border: 1px solid var(--accent-soft);
+      }
+
+      .brand-card__body {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+
+      .brand-card__title {
+        font-weight: 600;
+        font-size: 1.125rem;
+        letter-spacing: -0.02em;
+      }
+
+      .brand-card__tagline {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        line-height: 1.45;
+      }
+
+      .brand-card__cta {
+        flex-shrink: 0;
+        align-self: center;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--accent);
+        white-space: nowrap;
+      }
+
+      .brand-card__arrow {
+        display: inline-block;
+        transition: transform 0.2s ease;
+      }
+
+      .brand-card:hover .brand-card__arrow {
+        transform: translateX(4px);
+      }
+
+      .site-footer {
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+        text-align: center;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero">
+        <p class="hero__label">Tek adres · köprü</p>
+        <h1 class="hero__title">Nereye gitmek istersiniz?</h1>
+        <p class="hero__lead">
+          Karttan hedefi seçin. Dış siteler yeni sekmede açılır; Market ve API sayfaları bu domain üzerinde kalır.
+        </p>
+      </header>
+
+      <div id="brand-grid" class="brand-grid" role="list"></div>
+
+      <footer class="site-footer">
+        <p>
+          Liste <code>PORTAL_BRANDS</code> ile düzenlenir (bu klasördeki <code>index.html</code>). Yerelde
+          üst klasörde <strong>PLATFORM-BASLAT.bat</strong> — portal ve API aynı portta;
+          API kontrolü için <code>GET /api/v1/health</code>.
+        </p>
+        <p>Bilinmeyen bir yol yazılsa bile sunucu sizi bu köprüye yönlendirir (404 yerine).</p>
+        <p>&copy; <span id="year"></span></p>
+      </footer>
+    </div>
+
+    <script>
+      var PORTAL_BRANDS = [
+        {
+          id: "kocahup",
+          title: "Kocahup41",
+          tagline: "Kocaeli vitrin ve içerik",
+          url: "https://kocahup41.com",
+          accent: "#16a34a",
+          icon: "K",
+        },
+        {
+          id: "dogrubul",
+          title: "DoğruBul",
+          tagline: "Kaliteli ürün, güvenilir yönlendirme",
+          url: "https://dogrubul.com.tr",
+          accent: "#2563eb",
+          icon: "D",
+        },
+        {
+          id: "evleniyorum",
+          title: "Evleniyorum",
+          tagline: "Düğün ve organizasyon",
+          url: "https://evleniyorum.com",
+          accent: "#db2777",
+          icon: "E",
+        },
+        {
+          id: "market",
+          title: "Market",
+          tagline: "İlan ve ürün modülü (bu sunucudaki örnek sayfa)",
+          url: "/market.html",
+          accent: "#7c3aed",
+          icon: "M",
+        },
+        {
+          id: "luxor",
+          title: "Luxor.style",
+          tagline: "Seçkin giyim ve mağaza",
+          url: "https://luxor.style",
+          accent: "#ca8a04",
+          icon: "L",
+        },
+        {
+          id: "kst",
+          title: "Kocaelispor Taraftarlar",
+          tagline: "Taraftar topluluğu — adresi PORTAL_BRANDS içinde güncelleyin",
+          url: "https://www.instagram.com/kocaelisportaraftarlar/",
+          accent: "#22c55e",
+          icon: "KS",
+        },
+      ];
+
+      (function () {
+        var root = document.getElementById("brand-grid");
+        var year = document.getElementById("year");
+        if (year) year.textContent = String(new Date().getFullYear());
+        var brands = PORTAL_BRANDS;
+        if (!root || !brands || !brands.length) return;
+
+        brands.forEach(function (b) {
+          var article = document.createElement("article");
+          article.className = "brand-card";
+          article.setAttribute("role", "listitem");
+          var accent = b.accent || "#64748b";
+          article.style.setProperty("--accent", accent);
+          var rgb = hexToRgb(accent);
+          if (rgb) {
+            article.style.setProperty(
+              "--accent-soft",
+              "rgba(" + rgb.r + "," + rgb.g + "," + rgb.b + ",0.45)"
+            );
+            article.style.setProperty(
+              "--accent-bg",
+              "rgba(" + rgb.r + "," + rgb.g + "," + rgb.b + ",0.18)"
+            );
+          }
+
+          var link = document.createElement("a");
+          link.className = "brand-card__link";
+          link.href = b.url || "#";
+          var external = /^https?:\/\//i.test(String(b.url || ""));
+          link.target = external ? "_blank" : "_self";
+          if (external) link.rel = "noopener noreferrer";
+
+          var iconSpan = document.createElement("span");
+          iconSpan.className = "brand-card__icon";
+          iconSpan.setAttribute("aria-hidden", "true");
+          iconSpan.textContent =
+            b.icon != null && String(b.icon).length
+              ? String(b.icon)
+              : String(b.title || "?").charAt(0);
+
+          var body = document.createElement("span");
+          body.className = "brand-card__body";
+
+          var title = document.createElement("span");
+          title.className = "brand-card__title";
+          title.textContent = b.title || "";
+
+          var tag = document.createElement("span");
+          tag.className = "brand-card__tagline";
+          tag.textContent = b.tagline || "";
+
+          body.appendChild(title);
+          body.appendChild(tag);
+
+          var cta = document.createElement("span");
+          cta.className = "brand-card__cta";
+          cta.innerHTML = external
+            ? 'Siteye git <span class="brand-card__arrow" aria-hidden="true">&rarr;</span>'
+            : 'Aç <span class="brand-card__arrow" aria-hidden="true">&rarr;</span>';
+
+          link.appendChild(iconSpan);
+          link.appendChild(body);
+          link.appendChild(cta);
+          article.appendChild(link);
+          root.appendChild(article);
+        });
+
+        function hexToRgb(hex) {
+          var m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+          if (!m) return null;
+          return {
+            r: parseInt(m[1], 16),
+            g: parseInt(m[2], 16),
+            b: parseInt(m[3], 16),
+          };
+        }
+      })();
+    </script>
+  </body>
+</html>
