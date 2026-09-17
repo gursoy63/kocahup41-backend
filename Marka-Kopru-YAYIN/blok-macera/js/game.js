@@ -254,13 +254,13 @@
       ctx.putImageData(img, 0, 0);
     }
     cell(0, function (ctx, s) { noiseRect(ctx, s, [62, 140, 58], [90, 180, 70], 1); });
-    cell(1, function (ctx, s) { noiseRect(ctx, s, [70, 48, 28], [92, 140, 60], 2); ctx.fillStyle = "rgba(60,140,50,0.55)"; ctx.fillRect(0, 0, s, 8); });
-    cell(2, function (ctx, s) { noiseRect(ctx, s, [92, 62, 34], [70, 44, 24], 3); });
+    cell(1, function (ctx, s) { noiseRect(ctx, s, [120, 82, 48], [90, 160, 70], 2); ctx.fillStyle = "rgba(70,160,60,0.55)"; ctx.fillRect(0, 0, s, 8); });
+    cell(2, function (ctx, s) { noiseRect(ctx, s, [150, 102, 58], [118, 78, 44], 3); });
     cell(3, function (ctx, s) { noiseRect(ctx, s, [120, 124, 130], [90, 94, 100], 4); });
     cell(4, function (ctx, s) { noiseRect(ctx, s, [220, 200, 120], [190, 168, 90], 5); });
     cell(5, function (ctx, s) { noiseRect(ctx, s, [40, 100, 180], [70, 160, 210], 6); ctx.globalAlpha = 0.35; ctx.fillStyle = "#9fe"; ctx.fillRect(0, 0, s, s); });
-    cell(6, function (ctx, s) { noiseRect(ctx, s, [90, 64, 32], [70, 48, 24], 7); });
-    cell(7, function (ctx, s) { noiseRect(ctx, s, [80, 52, 26], [110, 78, 40], 8); ctx.fillStyle = "rgba(40,20,8,0.35)"; ctx.fillRect(10, 0, 4, s); ctx.fillRect(20, 0, 3, s); });
+    cell(6, function (ctx, s) { noiseRect(ctx, s, [150, 108, 58], [120, 82, 42], 7); });
+    cell(7, function (ctx, s) { noiseRect(ctx, s, [138, 92, 48], [168, 118, 70], 8); ctx.fillStyle = "rgba(80,50,20,0.28)"; ctx.fillRect(10, 0, 4, s); ctx.fillRect(20, 0, 3, s); });
     cell(8, function (ctx, s) { noiseRect(ctx, s, [70, 170, 72], [42, 130, 50], 9); });
     cell(9, function (ctx, s) { noiseRect(ctx, s, [96, 100, 108], [70, 74, 80], 10); });
     cell(10, function (ctx, s) { noiseRect(ctx, s, [186, 132, 70], [150, 100, 50], 11); ctx.fillStyle = "rgba(80,40,10,0.25)"; for (var i = 0; i < 4; i++) ctx.fillRect(0, i * 8, s, 2); });
@@ -320,7 +320,7 @@
 
   function aoAt(x, y, z, cx, cy, cz) {
     var t = (isSolid(x + cx, y, z) ? 1 : 0) + (isSolid(x, y + cy, z) ? 1 : 0) + (isSolid(x, y, z + cz) ? 1 : 0);
-    return 1 - t * 0.2;
+    return 1 - t * 0.1;
   }
 
   var chunkMeshes = {};
@@ -353,7 +353,7 @@
             destN = id === WATER ? wnor : nor;
             destU = id === WATER ? wuv : uv;
             destC = id === WATER ? wcol : col;
-            shade = f.d[1] === 1 ? 1 : f.d[1] === -1 ? 0.55 : 0.78;
+            shade = f.d[1] === 1 ? 1 : f.d[1] === -1 ? 0.78 : 0.93;
             tint = id === GRASS && f.d[1] === 1 ? [0.55, 1, 0.45] : [1, 1, 1];
             corners = f.c;
             order = [0, 1, 2, 0, 2, 3];
@@ -420,8 +420,8 @@
     scene.fog = new THREE.Fog(0x7ec8ff, 28, 92);
     hemi = new THREE.HemisphereLight(0xd7ecff, 0x5a7a48, 1.05);
     scene.add(hemi);
-    scene.add(new THREE.AmbientLight(0x8fb89a, 0.42));
-    sun = new THREE.DirectionalLight(0xfff6e0, 1.15);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.78));
+    sun = new THREE.DirectionalLight(0xfff6e0, 0.55);
     sun.position.set(40, 80, 20);
     scene.add(sun);
     opaqueMat = new THREE.MeshLambertMaterial({ map: makeAtlas(), vertexColors: true });
@@ -753,8 +753,8 @@
     scene.fog.color.copy(sky);
     skyMesh.material.color.copy(sky);
     renderer.setClearColor(sky, 1);
-    hemi.intensity = 0.45 + k * 0.7;
-    sun.intensity = 0.35 + k * 0.9;
+    hemi.intensity = 0.7 + k * 0.35;
+    sun.intensity = 0.25 + k * 0.45;
     sun.position.set(Math.cos(t * Math.PI * 2) * 80, Math.sin(t * Math.PI * 2) * 90, 20);
   }
 
