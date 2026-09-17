@@ -54,7 +54,7 @@ http
       return res.end("Bad path");
     }
 
-    const file = path.join(ROOT, rel);
+    let file = path.join(ROOT, rel);
     if (!isUnderRoot(file)) {
       res.writeHead(400, { "Content-Type": "text/plain" });
       return res.end("Bad path");
@@ -65,6 +65,19 @@ http
       st = fs.statSync(file);
     } catch {
       st = null;
+    }
+
+    if (st && st.isDirectory()) {
+      file = path.join(file, "index.html");
+      if (!isUnderRoot(file)) {
+        res.writeHead(400, { "Content-Type": "text/plain" });
+        return res.end("Bad path");
+      }
+      try {
+        st = fs.statSync(file);
+      } catch {
+        st = null;
+      }
     }
 
     if (st && st.isFile()) {
