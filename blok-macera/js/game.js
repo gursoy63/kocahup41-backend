@@ -24,7 +24,7 @@
   B(SAND, "Kum", "#d7c27a", 4, 4, 4, 0.45, SAND);
   B(WATER, "Su", "#3a7ec8", 5, 5, 5, 0.2, 0, true);
   B(LOG, "Odun", "#6b4423", 6, 7, 6, 0.9, LOG);
-  B(LEAVES, "Yaprak", "#2f7a3a", 8, 8, 8, 0.25, 0, true);
+  B(LEAVES, "Yaprak", "#4ec45a", 8, 8, 8, 0.25, 0);
   B(COBBLE, "Kırık taş", "#6d7076", 9, 9, 9, 1.3, COBBLE);
   B(PLANKS, "Tahta", "#b8894a", 10, 10, 10, 0.7, PLANKS);
   B(GLASS, "Cam", "#c5e8f0", 11, 11, 11, 0.3, 0, true);
@@ -194,9 +194,10 @@
       if (z % 8 === 0 && onProg) onProg(0.1 + (z / D) * 0.45);
     }
     var i;
-    for (i = 0; i < 90; i++) {
+    for (i = 0; i < 42; i++) {
       x = 4 + Math.floor(hash2(i, 2, s.n) * (W - 8));
       z = 4 + Math.floor(hash2(i, 7, s.n) * (D - 8));
+      if (Math.hypot(x - W / 2, z - D / 2) < 14) continue;
       for (y = H - 2; y > 8; y--) if (get(x, y, z) === GRASS) break;
       if (get(x, y, z) === GRASS) growTree(x, y + 1, z, 4 + Math.floor(hash2(i, 11, s.n) * 3));
     }
@@ -217,6 +218,16 @@
       }
     }
     return { x: cx + 0.5, y: 28, z: cz + 0.5 };
+  }
+
+  function clearAround(sx, sz, rad) {
+    var x, y, z, id;
+    for (x = sx - rad; x <= sx + rad; x++)
+      for (z = sz - rad; z <= sz + rad; z++)
+        for (y = 1; y < H; y++) {
+          id = get(x, y, z);
+          if (id === LOG || id === LEAVES) setb(x, y, z, AIR);
+        }
   }
 
   var atlasTex = null;
@@ -250,7 +261,7 @@
     cell(5, function (ctx, s) { noiseRect(ctx, s, [40, 100, 180], [70, 160, 210], 6); ctx.globalAlpha = 0.35; ctx.fillStyle = "#9fe"; ctx.fillRect(0, 0, s, s); });
     cell(6, function (ctx, s) { noiseRect(ctx, s, [90, 64, 32], [70, 48, 24], 7); });
     cell(7, function (ctx, s) { noiseRect(ctx, s, [80, 52, 26], [110, 78, 40], 8); ctx.fillStyle = "rgba(40,20,8,0.35)"; ctx.fillRect(10, 0, 4, s); ctx.fillRect(20, 0, 3, s); });
-    cell(8, function (ctx, s) { noiseRect(ctx, s, [36, 110, 48], [20, 80, 32], 9); });
+    cell(8, function (ctx, s) { noiseRect(ctx, s, [70, 170, 72], [42, 130, 50], 9); });
     cell(9, function (ctx, s) { noiseRect(ctx, s, [96, 100, 108], [70, 74, 80], 10); });
     cell(10, function (ctx, s) { noiseRect(ctx, s, [186, 132, 70], [150, 100, 50], 11); ctx.fillStyle = "rgba(80,40,10,0.25)"; for (var i = 0; i < 4; i++) ctx.fillRect(0, i * 8, s, 2); });
     cell(11, function (ctx, s) { noiseRect(ctx, s, [180, 220, 230], [140, 190, 210], 12); ctx.globalAlpha = 0.4; ctx.fillStyle = "#fff"; ctx.fillRect(4, 4, s - 8, s - 8); });
@@ -262,14 +273,14 @@
     cell(17, function (ctx, s) { noiseRect(ctx, s, [160, 100, 48], [120, 70, 30], 18); ctx.fillStyle = "#3a2a18"; ctx.fillRect(4, 4, s - 8, s - 8); });
     cell(18, function (ctx, s) { noiseRect(ctx, s, [150, 92, 44], [110, 64, 28], 19); });
     cell(19, function (ctx, s) {
-      ctx.clearRect(0, 0, s, s);
+      noiseRect(ctx, s, [62, 140, 58], [90, 180, 70], 21);
       ctx.fillStyle = "#2f7a3a"; ctx.fillRect(14, 16, 4, 14);
       ctx.fillStyle = "#e85d8a"; ctx.beginPath(); ctx.arc(16, 12, 7, 0, Math.PI * 2); ctx.fill();
     });
     cell(20, function (ctx, s) { noiseRect(ctx, s, [230, 240, 250], [200, 214, 226], 20); });
     cell(21, function (ctx, s) { noiseRect(ctx, s, [160, 70, 54], [120, 48, 38], 21); ctx.strokeStyle = "rgba(40,10,8,0.4)"; for (var i = 0; i < 4; i++) ctx.strokeRect(0, i * 8, s, 8); });
     cell(22, function (ctx, s) {
-      ctx.clearRect(0, 0, s, s);
+      noiseRect(ctx, s, [90, 64, 32], [70, 48, 24], 22);
       ctx.fillStyle = "#6b4423"; ctx.fillRect(14, 14, 4, 16);
       ctx.fillStyle = "#ffb347"; ctx.beginPath(); ctx.arc(16, 10, 6, 0, Math.PI * 2); ctx.fill();
     });
@@ -407,9 +418,10 @@
     renderer.setSize(innerWidth, innerHeight);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     scene.fog = new THREE.Fog(0x7ec8ff, 28, 92);
-    hemi = new THREE.HemisphereLight(0xbcdfff, 0x3a5a32, 0.85);
+    hemi = new THREE.HemisphereLight(0xd7ecff, 0x5a7a48, 1.05);
     scene.add(hemi);
-    sun = new THREE.DirectionalLight(0xfff4d2, 0.95);
+    scene.add(new THREE.AmbientLight(0x8fb89a, 0.42));
+    sun = new THREE.DirectionalLight(0xfff6e0, 1.15);
     sun.position.set(40, 80, 20);
     scene.add(sun);
     opaqueMat = new THREE.MeshLambertMaterial({ map: makeAtlas(), vertexColors: true });
@@ -422,9 +434,9 @@
     );
     highlight.visible = false;
     scene.add(highlight);
-    arm = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.36, 0.12), new THREE.MeshLambertMaterial({ color: db.profile.color }));
-    arm.position.set(0.35, -0.28, -0.48);
-    arm.rotation.x = 0.35;
+    arm = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.2, 0.07), new THREE.MeshLambertMaterial({ color: db.profile.color }));
+    arm.position.set(0.26, -0.34, -0.42);
+    arm.rotation.x = 0.4;
     camera.add(arm);
     scene.add(camera);
     clock = new THREE.Clock();
@@ -741,8 +753,8 @@
     scene.fog.color.copy(sky);
     skyMesh.material.color.copy(sky);
     renderer.setClearColor(sky, 1);
-    hemi.intensity = 0.25 + k * 0.7;
-    sun.intensity = k * 1.05;
+    hemi.intensity = 0.45 + k * 0.7;
+    sun.intensity = 0.35 + k * 0.9;
     sun.position.set(Math.cos(t * Math.PI * 2) * 80, Math.sin(t * Math.PI * 2) * 90, 20);
   }
 
@@ -941,7 +953,9 @@
         player.inv = emptyInv(); player.hot = 0; player.hp = 10; player.food = 10;
         var sp = findSpawn();
         player.x = sp.x; player.y = sp.y; player.z = sp.z;
-        player.yaw = 0; player.pitch = -0.12; player.vy = 0;
+        player.yaw = 0.4; player.pitch = -0.08; player.vy = 0;
+        world.time = 0.34;
+        clearAround(Math.floor(sp.x), Math.floor(sp.z), 6);
       }
       Object.keys(chunkMeshes).forEach(function (k) {
         chunkMeshes[k].forEach(function (m) { scene.remove(m); m.geometry.dispose(); });
