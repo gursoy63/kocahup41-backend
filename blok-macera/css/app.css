@@ -532,15 +532,16 @@ h1 {
   appearance: none;
   text-align: left;
   border-radius: 14px;
-  border: 1px solid color-mix(in srgb, var(--lvl, var(--green)) 55%, transparent);
+  border: 2px solid var(--lvl, var(--green));
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--lvl, var(--green)) 28%, transparent), rgba(8, 18, 12, 0.55));
+    linear-gradient(165deg, color-mix(in srgb, var(--lvl, var(--green)) 52%, #08140e), #08140ecc);
   color: var(--text);
   padding: 0.85rem 0.9rem 0.95rem;
   min-height: 7.2rem;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06), 0 8px 18px rgba(0, 0, 0, 0.28);
 }
 
 .level-card b {
