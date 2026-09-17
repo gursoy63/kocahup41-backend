@@ -237,8 +237,11 @@
     c.width = cols * tile; c.height = cols * tile;
     var g = c.getContext("2d");
     function cell(i, fn) {
+      var x = (i % cols) * tile, y = Math.floor(i / cols) * tile;
       g.save();
-      g.translate((i % cols) * tile, Math.floor(i / cols) * tile);
+      g.translate(x, y);
+      noiseRect.ox = x;
+      noiseRect.oy = y;
       fn(g, tile);
       g.restore();
     }
@@ -251,7 +254,7 @@
         b = (c1[2] + (c2[2] - c1[2]) * n) | 0;
         d[i * 4] = r; d[i * 4 + 1] = gg; d[i * 4 + 2] = b; d[i * 4 + 3] = 255;
       }
-      ctx.putImageData(img, 0, 0);
+      ctx.putImageData(img, noiseRect.ox, noiseRect.oy);
     }
     cell(0, function (ctx, s) { noiseRect(ctx, s, [62, 140, 58], [90, 180, 70], 1); });
     cell(1, function (ctx, s) { noiseRect(ctx, s, [120, 82, 48], [90, 160, 70], 2); ctx.fillStyle = "rgba(70,160,60,0.55)"; ctx.fillRect(0, 0, s, 8); });
@@ -261,7 +264,7 @@
     cell(5, function (ctx, s) { noiseRect(ctx, s, [40, 100, 180], [70, 160, 210], 6); ctx.globalAlpha = 0.35; ctx.fillStyle = "#9fe"; ctx.fillRect(0, 0, s, s); });
     cell(6, function (ctx, s) { noiseRect(ctx, s, [150, 108, 58], [120, 82, 42], 7); });
     cell(7, function (ctx, s) { noiseRect(ctx, s, [138, 92, 48], [168, 118, 70], 8); ctx.fillStyle = "rgba(80,50,20,0.28)"; ctx.fillRect(10, 0, 4, s); ctx.fillRect(20, 0, 3, s); });
-    cell(8, function (ctx, s) { noiseRect(ctx, s, [70, 170, 72], [42, 130, 50], 9); });
+    cell(8, function (ctx, s) { noiseRect(ctx, s, [110, 210, 80], [40, 160, 50], 9); });
     cell(9, function (ctx, s) { noiseRect(ctx, s, [96, 100, 108], [70, 74, 80], 10); });
     cell(10, function (ctx, s) { noiseRect(ctx, s, [186, 132, 70], [150, 100, 50], 11); ctx.fillStyle = "rgba(80,40,10,0.25)"; for (var i = 0; i < 4; i++) ctx.fillRect(0, i * 8, s, 2); });
     cell(11, function (ctx, s) { noiseRect(ctx, s, [180, 220, 230], [140, 190, 210], 12); ctx.globalAlpha = 0.4; ctx.fillStyle = "#fff"; ctx.fillRect(4, 4, s - 8, s - 8); });
@@ -424,9 +427,9 @@
     sun = new THREE.DirectionalLight(0xfff6e0, 0.55);
     sun.position.set(40, 80, 20);
     scene.add(sun);
-    opaqueMat = new THREE.MeshLambertMaterial({ map: makeAtlas(), vertexColors: true });
-    waterMat = new THREE.MeshLambertMaterial({
-      map: atlasTex, vertexColors: true, transparent: true, opacity: 0.62, depthWrite: false
+    opaqueMat = new THREE.MeshBasicMaterial({ map: makeAtlas() });
+    waterMat = new THREE.MeshBasicMaterial({
+      map: atlasTex, transparent: true, opacity: 0.62, depthWrite: false
     });
     highlight = new THREE.LineSegments(
       new THREE.EdgesGeometry(new THREE.BoxGeometry(1.02, 1.02, 1.02)),
@@ -434,7 +437,7 @@
     );
     highlight.visible = false;
     scene.add(highlight);
-    arm = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.2, 0.07), new THREE.MeshLambertMaterial({ color: db.profile.color }));
+    arm = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.2, 0.07), new THREE.MeshBasicMaterial({ color: db.profile.color }));
     arm.position.set(0.26, -0.34, -0.42);
     arm.rotation.x = 0.4;
     camera.add(arm);
@@ -753,8 +756,11 @@
     scene.fog.color.copy(sky);
     skyMesh.material.color.copy(sky);
     renderer.setClearColor(sky, 1);
-    hemi.intensity = 0.7 + k * 0.35;
-    sun.intensity = 0.25 + k * 0.45;
+    if (opaqueMat) {
+      var g = 0.55 + k * 0.45;
+      opaqueMat.color.setRGB(g, g, g);
+      waterMat.color.setRGB(g, g, g);
+    }
     sun.position.set(Math.cos(t * Math.PI * 2) * 80, Math.sin(t * Math.PI * 2) * 90, 20);
   }
 
