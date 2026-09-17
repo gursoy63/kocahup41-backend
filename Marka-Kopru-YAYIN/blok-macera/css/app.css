@@ -519,10 +519,73 @@ h1 {
   background: #0c1c13;
 }
 
-.recipes {
+.level-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 0.7rem;
+  margin: 0.4rem 0 1rem;
+  max-height: 52vh;
+  overflow: auto;
+}
+
+.level-card {
+  appearance: none;
+  text-align: left;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--lvl, var(--green)) 55%, transparent);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--lvl, var(--green)) 28%, transparent), rgba(8, 18, 12, 0.55));
+  color: var(--text);
+  padding: 0.85rem 0.9rem 0.95rem;
+  min-height: 7.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.level-card b {
+  font-size: 0.95rem;
+}
+
+.level-card small {
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+.level-card__n {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--lvl, var(--gold));
+  font-weight: 800;
+}
+
+.level-card__swatches {
+  display: flex;
+  gap: 4px;
+  margin-top: 0.4rem;
+}
+
+.level-card__swatches i {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+}
+
+.level-card:hover:not(:disabled),
+.level-card:focus-visible:not(:disabled) {
+  transform: translateY(-2px);
+  outline: none;
+  border-color: var(--lvl, var(--green));
+}
+
+.level-card.is-locked,
+.level-card:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+  filter: grayscale(0.35);
 }
 
 .recipe {

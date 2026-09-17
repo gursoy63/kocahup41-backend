@@ -48,40 +48,78 @@
   ITEMS[INGOT] = { name: "Demir külçe", color: "#cfd4dc" };
 
   var RECIPES = [
-    { name: "Tahta ×4", out: PLANKS, n: 4, need: [[LOG, 1]] },
-    { name: "Çubuk ×4", out: STICK, n: 4, need: [[PLANKS, 2]] },
-    { name: "Çalışma masası", out: TABLE, n: 1, need: [[PLANKS, 4]] },
-    { name: "Cam ×4", out: GLASS, n: 4, need: [[SAND, 4]] },
-    { name: "Tuğla ×4", out: BRICK, n: 4, need: [[COBBLE, 4]] },
-    { name: "Meşale ×4", out: TORCH, n: 4, need: [[COAL, 1], [STICK, 1]] },
-    { name: "Tahta kazma", out: WPICK, n: 1, need: [[PLANKS, 3], [STICK, 2]] },
-    { name: "Taş kazma", out: SPICK, n: 1, need: [[COBBLE, 3], [STICK, 2]] },
-    { name: "Demir külçe", out: INGOT, n: 1, need: [[IRON, 1], [COAL, 1]] },
-    { name: "Demir kazma", out: IPICK, n: 1, need: [[INGOT, 3], [STICK, 2]] },
-    { name: "Tahta balta", out: WAXE, n: 1, need: [[PLANKS, 3], [STICK, 2]] }
+    { name: "Tahta ×4", out: PLANKS, n: 4, need: [[LOG, 1]], min: 1 },
+    { name: "Çubuk ×4", out: STICK, n: 4, need: [[PLANKS, 2]], min: 1 },
+    { name: "Tahta kazma", out: WPICK, n: 1, need: [[PLANKS, 3], [STICK, 2]], min: 1 },
+    { name: "Cam ×4", out: GLASS, n: 4, need: [[SAND, 4]], min: 2 },
+    { name: "Çalışma masası", out: TABLE, n: 1, need: [[PLANKS, 4]], min: 3 },
+    { name: "Taş kazma", out: SPICK, n: 1, need: [[COBBLE, 3], [STICK, 2]], min: 4 },
+    { name: "Meşale ×4", out: TORCH, n: 4, need: [[COAL, 1], [STICK, 1]], min: 5 },
+    { name: "Tahta balta", out: WAXE, n: 1, need: [[PLANKS, 3], [STICK, 2]], min: 5 },
+    { name: "Demir külçe", out: INGOT, n: 1, need: [[IRON, 1], [COAL, 1]], min: 6 },
+    { name: "Demir kazma", out: IPICK, n: 1, need: [[INGOT, 3], [STICK, 2]], min: 6 },
+    { name: "Tuğla ×4", out: BRICK, n: 4, need: [[COBBLE, 4]], min: 7 }
   ];
 
-  var KEY = "bmu_v1";
+  var KEY = "bmu_v2";
   function $(id) { return document.getElementById(id); }
   function loadDb() {
     try { return JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { return {}; }
   }
   function saveDb() { localStorage.setItem(KEY, JSON.stringify(db)); }
 
+  function hexRgb(h) {
+    h = String(h || "#888888").replace("#", "");
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    var n = parseInt(h, 16);
+    if (isNaN(n)) return [128, 128, 128];
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+  function shiftRgb(rgb, d) {
+    return [
+      Math.max(0, Math.min(255, rgb[0] + d)),
+      Math.max(0, Math.min(255, rgb[1] + d)),
+      Math.max(0, Math.min(255, rgb[2] + d))
+    ];
+  }
+
+  var LEVELS = [
+    { n: 1, name: "Çimen Vadisi", order: "Çimen → Toprak → Odun", accent: "#3dcc7a", bg: "#07140c", sky: "#7ec8ff", grass: "#4a9a45", dirt: "#8a5a32", stone: "#8b9199", sand: "#d7c27a", water: "#3a7ec8", log: "#6b4423", leaves: "#4ec45a", flower: "#e85d8a", snow: "#eef6fb", brick: "#a24b3a", crystal: "#7cf0d2", surface: "grass", trees: 36, waterY: 13, hills: 16, coal: 0, iron: 0, gold: 0, need: 2 },
+    { n: 2, name: "Kum Kıyısı", order: "Kum → Su → Cam", accent: "#e4c36a", bg: "#1a1408", sky: "#ffe08a", grass: "#c4b45a", dirt: "#c4a056", stone: "#b8a078", sand: "#efd27a", water: "#4eb3d3", log: "#b07a3a", leaves: "#c8d45a", flower: "#f4c430", snow: "#fff3c4", brick: "#c4843a", crystal: "#ffe566", surface: "sand", trees: 12, waterY: 16, hills: 10, coal: 0, iron: 0, gold: 0, need: 2 },
+    { n: 3, name: "Gül Bahçesi", order: "Çiçek → Yaprak → Tahta", accent: "#f472b6", bg: "#1a0812", sky: "#ffc1e3", grass: "#e85d8a", dirt: "#a45a6a", stone: "#c49aa8", sand: "#f3c6d4", water: "#e091c4", log: "#8a3a52", leaves: "#f9a8d4", flower: "#fb7185", snow: "#ffe4f0", brick: "#be185d", crystal: "#fda4af", surface: "grass", trees: 28, waterY: 13, hills: 14, coal: 0, iron: 0, gold: 0, need: 2 },
+    { n: 4, name: "Gök Ada", order: "Taş → Kömür → Kırık taş", accent: "#22d3ee", bg: "#06141c", sky: "#7dd3fc", grass: "#2dd4bf", dirt: "#155e75", stone: "#67e8f9", sand: "#a5f3fc", water: "#0891b2", log: "#0e7490", leaves: "#5eead4", flower: "#38bdf8", snow: "#e0f2fe", brick: "#0369a1", crystal: "#67e8f9", surface: "grass", trees: 22, waterY: 12, hills: 18, coal: 1, iron: 0, gold: 0, need: 3 },
+    { n: 5, name: "Amber Orman", order: "Odun → Balta → Meşale", accent: "#f97316", bg: "#1c0c04", sky: "#fdba74", grass: "#ea580c", dirt: "#9a3412", stone: "#c2410c", sand: "#fb923c", water: "#f59e0b", log: "#7c2d12", leaves: "#fbbf24", flower: "#f97316", snow: "#ffedd5", brick: "#b45309", crystal: "#fcd34d", surface: "grass", trees: 48, waterY: 12, hills: 15, coal: 1, iron: 0, gold: 0, need: 3 },
+    { n: 6, name: "Menekşe Tepe", order: "Demir → Külçe → Kazma", accent: "#a78bfa", bg: "#12081c", sky: "#c4b5fd", grass: "#8b5cf6", dirt: "#5b21b6", stone: "#7c3aed", sand: "#ddd6fe", water: "#6d28d9", log: "#4c1d95", leaves: "#c4b5fd", flower: "#e879f9", snow: "#f3e8ff", brick: "#6d28d9", crystal: "#d8b4fe", surface: "grass", trees: 24, waterY: 13, hills: 20, coal: 1, iron: 1, gold: 0, need: 3 },
+    { n: 7, name: "Kar Diyarı", order: "Kar → Cam → Tuğla", accent: "#e0f2fe", bg: "#0b1220", sky: "#dbeafe", grass: "#93c5fd", dirt: "#64748b", stone: "#cbd5e1", sand: "#e2e8f0", water: "#38bdf8", log: "#94a3b8", leaves: "#e2e8f0", flower: "#7dd3fc", snow: "#f8fafc", brick: "#64748b", crystal: "#bae6fd", surface: "snow", trees: 18, waterY: 11, hills: 22, coal: 1, iron: 1, gold: 0, need: 3 },
+    { n: 8, name: "Volkan Ocağı", order: "Tuğla → Altın → Kristal", accent: "#ef4444", bg: "#1a0606", sky: "#7c2d12", grass: "#b91c1c", dirt: "#7f1d1d", stone: "#44403c", sand: "#ea580c", water: "#9a3412", log: "#431407", leaves: "#f87171", flower: "#fb923c", snow: "#fecaca", brick: "#991b1b", crystal: "#fbbf24", surface: "sand", trees: 8, waterY: 8, hills: 24, coal: 1, iron: 1, gold: 1, need: 3 },
+    { n: 9, name: "Zümrüt Derinlik", order: "Mağara → Cevher → Usta taşı", accent: "#10b981", bg: "#022c22", sky: "#064e3b", grass: "#059669", dirt: "#14532d", stone: "#166534", sand: "#4ade80", water: "#0f766e", log: "#052e16", leaves: "#34d399", flower: "#6ee7b7", snow: "#d1fae5", brick: "#047857", crystal: "#6ee7b7", surface: "grass", trees: 20, waterY: 10, hills: 19, coal: 1, iron: 1, gold: 1, need: 3 },
+    { n: 10, name: "Altın Maden", order: "Altın → Kristal → Zirve", accent: "#facc15", bg: "#1c1404", sky: "#854d0e", grass: "#ca8a04", dirt: "#a16207", stone: "#a3a3a3", sand: "#fde047", water: "#eab308", log: "#713f12", leaves: "#facc15", flower: "#f59e0b", snow: "#fef9c3", brick: "#b45309", crystal: "#fef08a", surface: "grass", trees: 16, waterY: 12, hills: 17, coal: 1, iron: 1, gold: 1, need: 3 },
+    { n: 11, name: "Gece Bahçesi", order: "Gece paleti → Neon kristal", accent: "#818cf8", bg: "#020617", sky: "#1e1b4b", grass: "#4f46e5", dirt: "#1e1b4b", stone: "#312e81", sand: "#6366f1", water: "#4338ca", log: "#312e81", leaves: "#22d3ee", flower: "#e879f9", snow: "#c7d2fe", brick: "#4338ca", crystal: "#22d3ee", surface: "grass", trees: 26, waterY: 13, hills: 16, coal: 1, iron: 1, gold: 1, need: 3 },
+    { n: 12, name: "Usta Zirvesi", order: "Tüm bloklar · Büyük Usta", accent: "#f59e0b", bg: "#111827", sky: "#312e81", grass: "#f43f5e", dirt: "#a21caf", stone: "#22c55e", sand: "#eab308", water: "#06b6d4", log: "#f97316", leaves: "#84cc16", flower: "#d946ef", snow: "#f8fafc", brick: "#f59e0b", crystal: "#fde047", surface: "grass", trees: 30, waterY: 12, hills: 21, coal: 1, iron: 1, gold: 1, need: 4 }
+  ];
+
   var db = loadDb();
   if (!db.profile) db.profile = { name: "Kaşif", color: "#3dcc7a" };
   if (!db.settings) db.settings = { sens: 1, music: 0.25, sfx: 0.55, invert: false, fps: false };
   if (!db.worlds) db.worlds = [];
+  if (!db.campaign) db.campaign = { unlocked: 1 };
 
-  var world = { seed: 1, id: "", name: "", map: null, time: 0.22, mined: 0, placed: 0, crystals: 0, temple: null };
+  var world = { seed: 1, id: "", name: "", map: null, time: 0.22, mined: 0, placed: 0, crystals: 0, temple: null, level: 1, won: false };
+  function currentLevel() {
+    var n = world.level || 1;
+    return LEVELS[Math.max(0, Math.min(LEVELS.length, n) - 1)];
+  }
   var player = { x: 48.5, y: 20, z: 48.5, vx: 0, vy: 0, vz: 0, yaw: 0, pitch: -0.12, hp: 10, food: 10, inv: [], hot: 0 };
 
   function emptyInv() {
-    var a = [];
-    for (var i = 0; i < 36; i++) a.push(null);
-    a[0] = { id: PLANKS, n: 24 };
-    a[1] = { id: WPICK, n: 1 };
-    a[2] = { id: TORCH, n: 8 };
+    var a = [], i;
+    for (i = 0; i < 36; i++) a.push(null);
+    var L = currentLevel();
+    var kit = [[PLANKS, 16], [WPICK, 1], [TORCH, 6]];
+    if (L.n >= 4) kit = [[PLANKS, 16], [SPICK, 1], [TORCH, 8], [COBBLE, 8]];
+    if (L.n >= 6) kit = [[PLANKS, 20], [IPICK, 1], [TORCH, 10], [BRICK, 8]];
+    if (L.n >= 10) kit = [[PLANKS, 24], [IPICK, 1], [WAXE, 1], [TORCH, 12], [GLASS, 8]];
+    kit.forEach(function (k, ix) { a[ix] = { id: k[0], n: k[1] }; });
     return a;
   }
 
@@ -149,57 +187,66 @@
           if ((xx + zz) % 2 === 0) setb(x + xx, y + 2, z + zz, BRICK);
         }
       }
+    var L = currentLevel();
+    var need = L.need || 3;
+    var spots = [[3, 1, 3], [1, 1, 1], [5, 1, 5], [3, 2, 3], [1, 1, 5], [5, 1, 1]];
+    var i;
+    for (i = 0; i < need && i < spots.length; i++) {
+      setb(x + spots[i][0], y + spots[i][1], z + spots[i][2], CRYSTAL);
+    }
     setb(x + 3, y, z + 3, GOLD);
-    setb(x + 3, y + 1, z + 3, CRYSTAL);
-    setb(x + 1, y + 1, z + 1, CRYSTAL);
-    setb(x + 5, y + 1, z + 5, CRYSTAL);
     setb(x + 3, y + 3, z + 3, GOLD);
     world.temple = { x: x + 3, y: y + 1, z: z + 3 };
   }
 
   function generate(seedText, onProg) {
     var s = seedFrom(seedText);
+    var L = currentLevel();
+    var waterY = L.waterY == null ? WATER_Y : L.waterY;
+    var hill = L.hills || 16;
     world.seed = s.n;
     world.seedText = s.text;
     world.map = new Uint8Array(W * H * D);
-    var x, y, z, h, biome, id;
+    var x, y, z, h, biome, id, top;
     for (z = 0; z < D; z++) {
       for (x = 0; x < W; x++) {
-        h = 10 + Math.floor(fbm(x * 0.03, z * 0.03, s.n, 5) * 16 + fbm(x * 0.09, z * 0.09, s.n + 3, 3) * 4);
+        h = 10 + Math.floor(fbm(x * 0.03, z * 0.03, s.n, 5) * hill + fbm(x * 0.09, z * 0.09, s.n + 3, 3) * 4);
         biome = fbm(x * 0.02, z * 0.02, s.n + 40, 3);
         if (h < 1) h = 1;
         if (h > H - 4) h = H - 4;
         for (y = 0; y < H; y++) {
           id = AIR;
           if (y === 0) id = BEDROCK;
-          else if (y > h && y <= WATER_Y) id = WATER;
+          else if (y > h && y <= waterY) id = WATER;
           else if (y > h) id = AIR;
           else if (y === h) {
-            if (h <= WATER_Y + 1) id = SAND;
-            else if (biome > 0.72 && h > 22) id = SNOW;
+            if (h <= waterY + 1) id = SAND;
+            else if (L.surface === "snow") id = SNOW;
+            else if (L.surface === "sand") id = SAND;
             else id = GRASS;
-          } else if (y > h - 4) id = h <= WATER_Y + 1 ? SAND : DIRT;
+          } else if (y > h - 4) id = h <= waterY + 1 ? SAND : DIRT;
           else id = STONE;
           if (id === STONE) {
             var cave = n3(x * 0.09, y * 0.11, z * 0.09, s.n + 70);
             if (cave > 0.72 && y > 2 && y < h - 1) id = AIR;
-            else if (hash2(x, y * 3 + z, s.n) > 0.984 && y < 12) id = GOLD;
-            else if (hash2(x + 9, y + z, s.n) > 0.97 && y < 18) id = IRON;
-            else if (hash2(x, z + y, s.n + 2) > 0.955) id = COAL;
+            else if (L.gold && hash2(x, y * 3 + z, s.n) > 0.984 && y < 12) id = GOLD;
+            else if (L.iron && hash2(x + 9, y + z, s.n) > 0.97 && y < 18) id = IRON;
+            else if (L.coal && hash2(x, z + y, s.n + 2) > 0.955) id = COAL;
           }
           setb(x, y, z, id);
         }
-        if (get(x, h, z) === GRASS && hash2(x, z, s.n + 5) > 0.986) setb(x, h + 1, z, FLOWER);
+        top = get(x, h, z);
+        if ((top === GRASS || top === SNOW) && hash2(x, z, s.n + 5) > 0.986) setb(x, h + 1, z, FLOWER);
       }
       if (z % 8 === 0 && onProg) onProg(0.1 + (z / D) * 0.45);
     }
-    var i;
-    for (i = 0; i < 42; i++) {
+    var i, trees = L.trees == null ? 36 : L.trees;
+    for (i = 0; i < trees; i++) {
       x = 4 + Math.floor(hash2(i, 2, s.n) * (W - 8));
       z = 4 + Math.floor(hash2(i, 7, s.n) * (D - 8));
       if (Math.hypot(x - W / 2, z - D / 2) < 14) continue;
-      for (y = H - 2; y > 8; y--) if (get(x, y, z) === GRASS) break;
-      if (get(x, y, z) === GRASS) growTree(x, y + 1, z, 4 + Math.floor(hash2(i, 11, s.n) * 3));
+      for (y = H - 2; y > 8; y--) if (get(x, y, z) === GRASS || get(x, y, z) === SNOW || get(x, y, z) === SAND) break;
+      if (get(x, y, z) === GRASS || get(x, y, z) === SNOW) growTree(x, y + 1, z, 4 + Math.floor(hash2(i, 11, s.n) * 3));
     }
     placeTemple(s.n);
     if (onProg) onProg(0.62);
@@ -256,36 +303,40 @@
       }
       ctx.putImageData(img, noiseRect.ox, noiseRect.oy);
     }
-    cell(0, function (ctx, s) { noiseRect(ctx, s, [62, 140, 58], [90, 180, 70], 1); });
-    cell(1, function (ctx, s) { noiseRect(ctx, s, [120, 82, 48], [90, 160, 70], 2); ctx.fillStyle = "rgba(70,160,60,0.55)"; ctx.fillRect(0, 0, s, 8); });
-    cell(2, function (ctx, s) { noiseRect(ctx, s, [150, 102, 58], [118, 78, 44], 3); });
-    cell(3, function (ctx, s) { noiseRect(ctx, s, [120, 124, 130], [90, 94, 100], 4); });
-    cell(4, function (ctx, s) { noiseRect(ctx, s, [220, 200, 120], [190, 168, 90], 5); });
-    cell(5, function (ctx, s) { noiseRect(ctx, s, [40, 100, 180], [70, 160, 210], 6); ctx.globalAlpha = 0.35; ctx.fillStyle = "#9fe"; ctx.fillRect(0, 0, s, s); });
-    cell(6, function (ctx, s) { noiseRect(ctx, s, [150, 108, 58], [120, 82, 42], 7); });
-    cell(7, function (ctx, s) { noiseRect(ctx, s, [138, 92, 48], [168, 118, 70], 8); ctx.fillStyle = "rgba(80,50,20,0.28)"; ctx.fillRect(10, 0, 4, s); ctx.fillRect(20, 0, 3, s); });
-    cell(8, function (ctx, s) { noiseRect(ctx, s, [110, 210, 80], [40, 160, 50], 9); });
-    cell(9, function (ctx, s) { noiseRect(ctx, s, [96, 100, 108], [70, 74, 80], 10); });
-    cell(10, function (ctx, s) { noiseRect(ctx, s, [186, 132, 70], [150, 100, 50], 11); ctx.fillStyle = "rgba(80,40,10,0.25)"; for (var i = 0; i < 4; i++) ctx.fillRect(0, i * 8, s, 2); });
-    cell(11, function (ctx, s) { noiseRect(ctx, s, [180, 220, 230], [140, 190, 210], 12); ctx.globalAlpha = 0.4; ctx.fillStyle = "#fff"; ctx.fillRect(4, 4, s - 8, s - 8); });
+    var L = currentLevel();
+    var g1 = hexRgb(L.grass), d1 = hexRgb(L.dirt), s1 = hexRgb(L.stone), sa = hexRgb(L.sand);
+    var w1 = hexRgb(L.water), lg = hexRgb(L.log), lf = hexRgb(L.leaves), fl = hexRgb(L.flower);
+    var sn = hexRgb(L.snow), br = hexRgb(L.brick), cr = hexRgb(L.crystal);
+    cell(0, function (ctx, s) { noiseRect(ctx, s, g1, shiftRgb(g1, 28), 1); });
+    cell(1, function (ctx, s) { noiseRect(ctx, s, d1, shiftRgb(g1, 10), 2); ctx.fillStyle = "rgba(" + g1[0] + "," + g1[1] + "," + g1[2] + ",0.55)"; ctx.fillRect(0, 0, s, 8); });
+    cell(2, function (ctx, s) { noiseRect(ctx, s, d1, shiftRgb(d1, -24), 3); });
+    cell(3, function (ctx, s) { noiseRect(ctx, s, s1, shiftRgb(s1, -28), 4); });
+    cell(4, function (ctx, s) { noiseRect(ctx, s, sa, shiftRgb(sa, -30), 5); });
+    cell(5, function (ctx, s) { noiseRect(ctx, s, w1, shiftRgb(w1, 40), 6); ctx.globalAlpha = 0.35; ctx.fillStyle = "#9fe"; ctx.fillRect(0, 0, s, s); });
+    cell(6, function (ctx, s) { noiseRect(ctx, s, lg, shiftRgb(lg, -20), 7); });
+    cell(7, function (ctx, s) { noiseRect(ctx, s, lg, shiftRgb(lg, 24), 8); ctx.fillStyle = "rgba(40,20,8,0.28)"; ctx.fillRect(10, 0, 4, s); ctx.fillRect(20, 0, 3, s); });
+    cell(8, function (ctx, s) { noiseRect(ctx, s, lf, shiftRgb(lf, -40), 9); });
+    cell(9, function (ctx, s) { noiseRect(ctx, s, shiftRgb(s1, -20), shiftRgb(s1, -40), 10); });
+    cell(10, function (ctx, s) { noiseRect(ctx, s, shiftRgb(lg, 40), lg, 11); ctx.fillStyle = "rgba(80,40,10,0.25)"; for (var i = 0; i < 4; i++) ctx.fillRect(0, i * 8, s, 2); });
+    cell(11, function (ctx, s) { noiseRect(ctx, s, [180, 220, 230], w1, 12); ctx.globalAlpha = 0.4; ctx.fillStyle = "#fff"; ctx.fillRect(4, 4, s - 8, s - 8); });
     cell(12, function (ctx, s) { noiseRect(ctx, s, [50, 50, 54], [110, 110, 118], 13); ctx.fillStyle = "#111"; ctx.fillRect(8, 10, 6, 5); ctx.fillRect(18, 16, 7, 6); });
-    cell(13, function (ctx, s) { noiseRect(ctx, s, [130, 130, 136], [90, 90, 96], 14); ctx.fillStyle = "#d8c4b0"; ctx.fillRect(7, 8, 5, 5); ctx.fillRect(16, 18, 6, 4); });
-    cell(14, function (ctx, s) { noiseRect(ctx, s, [140, 140, 90], [210, 180, 60], 15); ctx.fillStyle = "#f0d24a"; ctx.fillRect(10, 9, 8, 6); });
-    cell(15, function (ctx, s) { noiseRect(ctx, s, [80, 230, 210], [180, 255, 240], 16); ctx.fillStyle = "#fff"; ctx.globalAlpha = 0.5; ctx.fillRect(10, 10, 12, 12); });
+    cell(13, function (ctx, s) { noiseRect(ctx, s, s1, [216, 196, 176], 14); ctx.fillStyle = "#d8c4b0"; ctx.fillRect(7, 8, 5, 5); ctx.fillRect(16, 18, 6, 4); });
+    cell(14, function (ctx, s) { noiseRect(ctx, s, sa, cr, 15); ctx.fillStyle = L.crystal; ctx.fillRect(10, 9, 8, 6); });
+    cell(15, function (ctx, s) { noiseRect(ctx, s, cr, shiftRgb(cr, 40), 16); ctx.fillStyle = "#fff"; ctx.globalAlpha = 0.5; ctx.fillRect(10, 10, 12, 12); });
     cell(16, function (ctx, s) { noiseRect(ctx, s, [20, 20, 22], [50, 50, 54], 17); });
-    cell(17, function (ctx, s) { noiseRect(ctx, s, [160, 100, 48], [120, 70, 30], 18); ctx.fillStyle = "#3a2a18"; ctx.fillRect(4, 4, s - 8, s - 8); });
-    cell(18, function (ctx, s) { noiseRect(ctx, s, [150, 92, 44], [110, 64, 28], 19); });
+    cell(17, function (ctx, s) { noiseRect(ctx, s, br, lg, 18); ctx.fillStyle = "#3a2a18"; ctx.fillRect(4, 4, s - 8, s - 8); });
+    cell(18, function (ctx, s) { noiseRect(ctx, s, br, shiftRgb(br, -30), 19); });
     cell(19, function (ctx, s) {
-      noiseRect(ctx, s, [62, 140, 58], [90, 180, 70], 21);
-      ctx.fillStyle = "#2f7a3a"; ctx.fillRect(14, 16, 4, 14);
-      ctx.fillStyle = "#e85d8a"; ctx.beginPath(); ctx.arc(16, 12, 7, 0, Math.PI * 2); ctx.fill();
+      noiseRect(ctx, s, g1, lf, 21);
+      ctx.fillStyle = "rgb(" + lf[0] + "," + lf[1] + "," + lf[2] + ")"; ctx.fillRect(14, 16, 4, 14);
+      ctx.fillStyle = L.flower; ctx.beginPath(); ctx.arc(16, 12, 7, 0, Math.PI * 2); ctx.fill();
     });
-    cell(20, function (ctx, s) { noiseRect(ctx, s, [230, 240, 250], [200, 214, 226], 20); });
-    cell(21, function (ctx, s) { noiseRect(ctx, s, [160, 70, 54], [120, 48, 38], 21); ctx.strokeStyle = "rgba(40,10,8,0.4)"; for (var i = 0; i < 4; i++) ctx.strokeRect(0, i * 8, s, 8); });
+    cell(20, function (ctx, s) { noiseRect(ctx, s, sn, shiftRgb(sn, -20), 20); });
+    cell(21, function (ctx, s) { noiseRect(ctx, s, br, shiftRgb(br, -30), 21); ctx.strokeStyle = "rgba(40,10,8,0.4)"; for (var i = 0; i < 4; i++) ctx.strokeRect(0, i * 8, s, 8); });
     cell(22, function (ctx, s) {
-      noiseRect(ctx, s, [90, 64, 32], [70, 48, 24], 22);
-      ctx.fillStyle = "#6b4423"; ctx.fillRect(14, 14, 4, 16);
-      ctx.fillStyle = "#ffb347"; ctx.beginPath(); ctx.arc(16, 10, 6, 0, Math.PI * 2); ctx.fill();
+      noiseRect(ctx, s, lg, shiftRgb(lg, -20), 22);
+      ctx.fillStyle = "rgb(" + lg[0] + "," + lg[1] + "," + lg[2] + ")"; ctx.fillRect(14, 14, 4, 16);
+      ctx.fillStyle = L.crystal; ctx.beginPath(); ctx.arc(16, 10, 6, 0, Math.PI * 2); ctx.fill();
     });
     atlasTex = new THREE.CanvasTexture(c);
     atlasTex.magFilter = THREE.NearestFilter;
@@ -293,6 +344,40 @@
     atlasTex.generateMipmaps = false;
     atlasTex.colorSpace = THREE.SRGBColorSpace;
     return atlasTex;
+  }
+
+  function applyLevelTheme() {
+    var L = currentLevel();
+    BLOCKS[GRASS].color = L.grass;
+    BLOCKS[DIRT].color = L.dirt;
+    BLOCKS[STONE].color = L.stone;
+    BLOCKS[SAND].color = L.sand;
+    BLOCKS[WATER].color = L.water;
+    BLOCKS[LOG].color = L.log;
+    BLOCKS[LEAVES].color = L.leaves;
+    BLOCKS[FLOWER].color = L.flower;
+    BLOCKS[SNOW].color = L.snow;
+    BLOCKS[BRICK].color = L.brick;
+    BLOCKS[CRYSTAL].color = L.crystal;
+    BLOCKS[PLANKS].color = L.log;
+    var map = makeAtlas();
+    if (opaqueMat) {
+      if (opaqueMat.map && opaqueMat.map !== map) opaqueMat.map.dispose();
+      opaqueMat.map = map;
+      opaqueMat.needsUpdate = true;
+    }
+    if (waterMat) {
+      waterMat.map = map;
+      waterMat.needsUpdate = true;
+    }
+    document.documentElement.style.setProperty("--green", L.accent);
+    document.documentElement.style.setProperty("--bg", L.bg || "#07140c");
+    document.documentElement.style.setProperty("--gold", L.crystal);
+    document.documentElement.style.setProperty("--green-d", L.dirt);
+    if (hemi) hemi.groundColor.set(L.dirt);
+    if (scene && scene.fog) scene.fog.color.set(L.sky);
+    if (skyMesh) skyMesh.material.color.set(L.sky);
+    if (renderer) renderer.setClearColor(L.sky, 1);
   }
 
   function tileUV(tile) {
@@ -357,7 +442,7 @@
             destU = id === WATER ? wuv : uv;
             destC = id === WATER ? wcol : col;
             shade = f.d[1] === 1 ? 1 : f.d[1] === -1 ? 0.78 : 0.93;
-            tint = id === GRASS && f.d[1] === 1 ? [0.55, 1, 0.45] : [1, 1, 1];
+            tint = [1, 1, 1];
             corners = f.c;
             order = [0, 1, 2, 0, 2, 3];
             uvC = [[uvs[0], uvs[1]], [uvs[2], uvs[1]], [uvs[2], uvs[3]], [uvs[0], uvs[3]]];
@@ -525,10 +610,11 @@
   }
   function selected() { return player.inv[player.hot]; }
   function canCraft(r) {
+    if ((r.min || 1) > currentLevel().n) return false;
     return r.need.every(function (p) { return countItem(p[0]) >= p[1]; });
   }
   function doCraft(r) {
-    if (!canCraft(r)) return;
+    if ((r.min || 1) > currentLevel().n || !canCraft(r)) return;
     r.need.forEach(function (p) { takeItem(p[0], p[1]); });
     addItem(r.out, r.n);
     sfx("craft");
@@ -600,10 +686,10 @@
   }
 
   function rankName() {
-    var sc = world.mined + world.placed * 2 + world.crystals * 40;
-    if (world.crystals >= 3) return "Büyük Usta";
-    if (sc > 180) return "Usta";
-    if (sc > 70) return "Kalfa";
+    var L = currentLevel();
+    if (L.n >= 12 && world.won) return "Büyük Usta";
+    if (L.n >= 10) return "Usta";
+    if (L.n >= 6) return "Kalfa";
     return "Çırak";
   }
 
@@ -621,7 +707,25 @@
       s.className = "crumb" + (i < Math.ceil(player.food) ? " is-on" : "");
       c.appendChild(s);
     }
-    $("rank").textContent = rankName() + " · kristal " + world.crystals + "/3";
+    $("rank").textContent = "Seviye " + (world.level || 1) + " · " + currentLevel().name + " · kristal " + world.crystals + "/" + (currentLevel().need || 3);
+  }
+
+  function completeIfWon() {
+    var L = currentLevel();
+    var need = L.need || 3;
+    toast("Kristal · " + world.crystals + "/" + need);
+    if (world.won || world.crystals < need) return;
+    world.won = true;
+    if ((db.campaign.unlocked || 1) < L.n + 1) db.campaign.unlocked = Math.min(LEVELS.length, L.n + 1);
+    saveDb();
+    persistWorld();
+    paused = true;
+    $("win-title").textContent = L.n >= LEVELS.length ? "Büyük Usta oldunuz" : ("Seviye " + L.n + " tamamlandı");
+    $("win-hint").textContent = L.n >= LEVELS.length
+      ? "On iki dünyanın renk düzeni sizinle."
+      : ("Sıradaki blok düzeni: " + LEVELS[L.n].order);
+    $("win-next").hidden = L.n >= LEVELS.length;
+    showPanel("panel-win");
   }
 
   function slotEl(s, i, hot) {
@@ -667,21 +771,25 @@
       g.appendChild(sl);
     }
     r.innerHTML = "";
+    var lvl = currentLevel().n;
     RECIPES.forEach(function (rec) {
+      var locked = (rec.min || 1) > lvl;
       var b = document.createElement("button");
       b.type = "button";
       b.className = "recipe";
-      b.disabled = !canCraft(rec);
-      b.innerHTML = "<b>" + rec.name + "</b><span>" + rec.need.map(function (p) {
-        return p[1] + " " + itemDef(p[0]).name;
-      }).join(" · ") + "</span>";
-      b.addEventListener("click", function () { doCraft(rec); });
+      b.disabled = locked || !canCraft(rec);
+      b.innerHTML = "<b>" + rec.name + "</b><span>" + (locked
+        ? ("Seviye " + rec.min + " düzeninde açılır")
+        : rec.need.map(function (p) {
+          return p[1] + " " + itemDef(p[0]).name;
+        }).join(" · ")) + "</span>";
+      if (!locked) b.addEventListener("click", function () { doCraft(rec); });
       r.appendChild(b);
     });
   }
 
   function showPanel(id) {
-    ["panel-menu", "panel-new", "panel-worlds", "panel-char", "panel-settings", "panel-multi", "panel-pause", "panel-help", "panel-inv", "panel-load"].forEach(function (p) {
+    ["panel-menu", "panel-new", "panel-worlds", "panel-char", "panel-settings", "panel-multi", "panel-pause", "panel-help", "panel-inv", "panel-load", "panel-levels", "panel-win"].forEach(function (p) {
       $(p).hidden = p !== id;
     });
     overlayOpen = !!id;
@@ -704,6 +812,8 @@
       placed: world.placed,
       crystals: world.crystals,
       temple: world.temple,
+      level: world.level || 1,
+      won: !!world.won,
       updated: Date.now(),
       player: {
         x: player.x, y: player.y, z: player.z, yaw: player.yaw, pitch: player.pitch,
@@ -732,6 +842,8 @@
     world.mined = rec.mined || 0;
     world.placed = rec.placed || 0;
     world.crystals = rec.crystals || 0;
+    world.level = rec.level || 1;
+    world.won = !!rec.won;
     var raw = atob(rec.map);
     world.map = new Uint8Array(raw.length);
     var i;
@@ -747,21 +859,23 @@
   }
 
   function applyDayNight() {
+    var L = currentLevel();
     var t = world.time % 1;
     var day = t < 0.72;
     var k = day ? 1 - Math.abs(t - 0.36) / 0.36 : 0.08;
     if (k < 0.08) k = 0.08;
-    var sky = day ? new THREE.Color().setHSL(0.58, 0.55, 0.35 + k * 0.35) : new THREE.Color(0x061018);
-    if (t > 0.62 && t < 0.78) sky.setHSL(0.05, 0.7, 0.28);
+    var sky = new THREE.Color(L.sky);
+    if (!day) sky.multiplyScalar(0.22);
+    else sky.multiplyScalar(0.55 + k * 0.5);
+    if (t > 0.62 && t < 0.78) sky.lerp(new THREE.Color(L.accent), 0.35);
     scene.fog.color.copy(sky);
     skyMesh.material.color.copy(sky);
     renderer.setClearColor(sky, 1);
     if (opaqueMat) {
-      var g = 0.55 + k * 0.45;
+      var g = 0.62 + k * 0.38;
       opaqueMat.color.setRGB(g, g, g);
       waterMat.color.setRGB(g, g, g);
     }
-    sun.position.set(Math.cos(t * Math.PI * 2) * 80, Math.sin(t * Math.PI * 2) * 90, 20);
   }
 
   function hurt(n) {
@@ -868,10 +982,9 @@
       if (def.drop) addItem(def.drop, 1);
       if (hit.id === CRYSTAL) {
         world.crystals++;
-        toast("Usta kristali · " + world.crystals + "/3");
         sfx("crystal");
         renderHearts();
-        if (world.crystals >= 3) toast("Büyük Usta oldunuz!");
+        completeIfWon();
       } else sfx("break");
       world.mined++;
       remeshAround(hit.x, hit.z);
@@ -918,7 +1031,7 @@
         $("hint").textContent = nm + (world.temple ? "  ·  Anıt " + Math.round(Math.hypot(player.x - world.temple.x, player.z - world.temple.z)) + " m" : "");
       } else {
         highlight.visible = false;
-        $("hint").textContent = "WASD hareket · sol kaz · sağ yerleştir · E çanta";
+        $("hint").textContent = "Hedef: " + (currentLevel().need || 3) + " kristal · " + currentLevel().order;
       }
       lastSave += dt;
       if (lastSave > 40) { lastSave = 0; persistWorld(); }
@@ -935,11 +1048,15 @@
     if (c.requestPointerLock) c.requestPointerLock();
   }
 
-  function startGame(fromSave, rec, seedText, name) {
+  function startGame(fromSave, rec, seedText, name, levelN) {
+    if (levelN) world.level = levelN;
+    else if (!fromSave && !world.level) world.level = 1;
     showPanel("panel-load");
+    var L = currentLevel();
     $("load-bar").style.width = "6%";
-    $("load-hint").textContent = "Ada şekilleniyor…";
+    $("load-hint").textContent = "Seviye " + L.n + " · " + L.name;
     initThree();
+    applyLevelTheme();
     arm.material.color.set(db.profile.color);
     setTimeout(function () {
       if (fromSave) {
@@ -947,15 +1064,16 @@
           $("load-hint").textContent = "Kayıt okunamadı. Yeni dünya açın.";
           return;
         }
+        applyLevelTheme();
         if (!world.map || world.map.length !== W * H * D) {
           $("load-hint").textContent = "Kayıt bu sürümle uyumsuz.";
           return;
         }
       } else {
-        generate(seedText, function (p) { $("load-bar").style.width = Math.round(p * 100) + "%"; });
+        generate(seedText || ("seviye-" + L.n), function (p) { $("load-bar").style.width = Math.round(p * 100) + "%"; });
         world.id = "w_" + Date.now().toString(36);
-        world.name = name || "Yeşil Ada";
-        world.mined = 0; world.placed = 0; world.crystals = 0; world.time = 0.22;
+        world.name = name || ("Seviye " + L.n + " · " + L.name);
+        world.mined = 0; world.placed = 0; world.crystals = 0; world.won = false;
         player.inv = emptyInv(); player.hot = 0; player.hp = 10; player.food = 10;
         var sp = findSpawn();
         player.x = sp.x; player.y = sp.y; player.z = sp.z;
@@ -978,7 +1096,7 @@
       renderHotbar(); renderHearts();
       persistWorld();
       showPanel(null);
-      toast("Hoş geldin, " + db.profile.name);
+      toast("Seviye " + currentLevel().n + " · " + currentLevel().name);
     }, 40);
   }
 
@@ -1026,6 +1144,31 @@
     });
   }
 
+  function renderLevels() {
+    var box = $("level-grid");
+    box.innerHTML = "";
+    LEVELS.forEach(function (L) {
+      var locked = L.n > (db.campaign.unlocked || 1);
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "level-card" + (locked ? " is-locked" : "");
+      b.disabled = locked;
+      b.style.setProperty("--lvl", L.accent);
+      b.innerHTML = "<span class=\"level-card__n\">" + L.n + "</span><b>" + L.name + "</b><small>" + L.order + "</small>" +
+        "<span class=\"level-card__swatches\" aria-hidden=\"true\">" +
+        [L.grass, L.sand, L.water, L.log, L.crystal].map(function (c) {
+          return "<i style=\"background:" + c + "\"></i>";
+        }).join("") + "</span>";
+      b.addEventListener("click", function () {
+        if (locked) return;
+        audioOk();
+        world.level = L.n;
+        startGame(false, null, "seviye-" + L.n, "Seviye " + L.n + " · " + L.name, L.n);
+      });
+      box.appendChild(b);
+    });
+  }
+
   var COLORS = ["#3dcc7a", "#5ec8ff", "#e4c36a", "#ef6b5a", "#c084fc", "#f472b6", "#f8fafc", "#38bdf8"];
   function renderColors() {
     var box = $("char-colors");
@@ -1044,7 +1187,8 @@
   }
 
   function bindUi() {
-    $("btn-new").onclick = function () { sfx("ui"); showPanel("panel-new"); $("new-name").value = "Yeşil Ada"; $("new-seed").value = ""; };
+    $("btn-levels").onclick = function () { sfx("ui"); renderLevels(); showPanel("panel-levels"); };
+    $("btn-new").onclick = function () { sfx("ui"); showPanel("panel-new"); $("new-name").value = "Serbest ada"; $("new-seed").value = ""; };
     $("btn-worlds").onclick = function () { sfx("ui"); renderWorlds(); showPanel("panel-worlds"); };
     $("btn-char").onclick = function () { sfx("ui"); $("char-name").value = db.profile.name; renderColors(); showPanel("panel-char"); };
     $("btn-settings").onclick = function () {
@@ -1057,10 +1201,24 @@
       showPanel("panel-settings");
     };
     $("btn-multi").onclick = function () { sfx("ui"); $("mp-msg").textContent = ""; showPanel("panel-multi"); };
-    $("new-back").onclick = $("worlds-back").onclick = $("char-back").onclick = $("mp-back").onclick = function () { showPanel("panel-menu"); };
+    $("new-back").onclick = $("worlds-back").onclick = $("char-back").onclick = $("mp-back").onclick = $("levels-back").onclick = function () { showPanel("panel-menu"); };
+    $("win-next").onclick = function () {
+      var n = (world.level || 1) + 1;
+      if (n > LEVELS.length) { showPanel("panel-menu"); return; }
+      running = false;
+      world.level = n;
+      startGame(false, null, "seviye-" + n, "Seviye " + n + " · " + LEVELS[n - 1].name, n);
+    };
+    $("win-menu").onclick = function () {
+      persistWorld();
+      running = false; paused = false;
+      $("hud").hidden = true;
+      showPanel("panel-menu");
+    };
     $("new-go").onclick = function () {
       audioOk();
-      startGame(false, null, $("new-seed").value, $("new-name").value.trim() || "Yeşil Ada");
+      world.level = 1;
+      startGame(false, null, $("new-seed").value, $("new-name").value.trim() || "Serbest ada", 1);
     };
     $("char-save").onclick = function () {
       db.profile.name = $("char-name").value.trim() || "Kaşif";
@@ -1209,4 +1367,15 @@
   bindUi();
   showPanel("panel-menu");
   loop();
+  (function () {
+    var m = /[?&]seviye=(\d+)/.exec(location.search || "");
+    if (!m) return;
+    var n = Math.max(1, Math.min(LEVELS.length, Number(m[1])));
+    db.campaign.unlocked = Math.max(db.campaign.unlocked || 1, n);
+    saveDb();
+    setTimeout(function () {
+      world.level = n;
+      startGame(false, null, "seviye-" + n, "Seviye " + n + " · " + LEVELS[n - 1].name, n);
+    }, 60);
+  })();
 })();

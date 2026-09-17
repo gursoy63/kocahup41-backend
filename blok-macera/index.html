@@ -53,12 +53,13 @@
                 </div>
               </div>
               <p class="lead">
-                Sonsuz gibi hissettiren bir adada uyan. Kaz, inşa et, Usta Anıtı’ndaki kristalleri topla.
-                Dünyan yalnızca bu cihazda saklanır.
+                On iki dünyada usta olun. Her seviyede bloklar sırayla açılır, renk paleti değişir.
+                Kristalleri toplayın, sonraki dünyanın kapısını açın.
               </p>
               <div class="menu-actions">
-                <button class="btn btn--primary" id="btn-new">Yeni macera <small>Tohum ile dünya</small></button>
-                <button class="btn" id="btn-worlds">Dünyalarım <small>Kayıttan devam</small></button>
+                <button class="btn btn--primary" id="btn-levels">Seviyeler <small>12 dünya · renk düzeni</small></button>
+                <button class="btn" id="btn-new">Serbest ada <small>Tohum ile açık dünya</small></button>
+                <button class="btn" id="btn-worlds">Kayıtlarım <small>Kaldığın yerden</small></button>
                 <button class="btn" id="btn-char">Kaşif <small>Ad ve renk</small></button>
                 <button class="btn" id="btn-multi">Çok oyunculu <small>Davet kodlu oda</small></button>
                 <button class="btn" id="btn-settings">Ayarlar <small>Kontrol ve ses</small></button>
@@ -71,10 +72,10 @@
             <aside class="side-card">
               <h2>Bu sürümde</h2>
               <div class="kv">
-                <div>Mod <b>Keşif · inşa · usta yolu</b></div>
+                <div>Düzen <b>12 seviye · her birinde yeni renk</b></div>
+                <div>Bloklar <b>Sırayla açılır</b></div>
                 <div>Kayıt <b>Yalnızca cihaz</b></div>
                 <div>Sohbet <b>Kapalı (çocuk güvenliği)</b></div>
-                <div>Çok oyunculu <b>Davet kodu · isteğe bağlı</b></div>
               </div>
               <p class="hint" style="margin-top:1rem">
                 WASD hareket, boşluk zıpla, Shift yavaşla, E çanta, Esc menü.
@@ -83,6 +84,24 @@
             </aside>
           </div>
         </div>
+
+        <section class="panel inv" id="panel-levels" hidden>
+          <h2>Seviye seç</h2>
+          <p class="hint">Her dünya kendi renk paletini ve blok sırasını taşır. Kristalleri toplayınca sonraki seviye açılır.</p>
+          <div id="level-grid" class="level-grid"></div>
+          <div class="row">
+            <button class="btn btn--ghost" id="levels-back">Geri</button>
+          </div>
+        </section>
+
+        <section class="panel" id="panel-win" hidden>
+          <h2 id="win-title">Seviye tamamlandı</h2>
+          <p class="hint" id="win-hint">Sonraki dünyanın renkleri sizi bekliyor.</p>
+          <div class="pause-grid">
+            <button class="btn btn--primary" id="win-next" style="justify-content:center">Sonraki seviye</button>
+            <button class="btn" id="win-menu" style="justify-content:center">Ana menü</button>
+          </div>
+        </section>
 
         <section class="panel" id="panel-new" hidden>
           <h2>Yeni dünya</h2>
@@ -191,7 +210,7 @@
             <div>Menü <b>Esc</b></div>
           </div>
           <p class="hint" style="margin-top:1rem">
-            Hedef: haritadaki Usta Anıtı’nda 3 kristal bulun. Kazdıkça ve inşa ettikçe rütbeniz yükselir.
+            Hedef: o seviyenin kristallerini toplayın. Bloklar seviye düzenine göre gelir; renk her dünyada değişir.
           </p>
           <div class="row">
             <button class="btn btn--primary" id="help-back" style="flex:1;justify-content:center">Tamam</button>
@@ -219,6 +238,6 @@
       </div>
     </div>
     <script src="vendor/three.min.js"></script>
-    <script src="js/game.js?v=5"></script>
+    <script src="js/game.js?v=7"></script>
   </body>
 </html>
