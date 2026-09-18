@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#3b2760" />
+    <meta name="description" content="Blok Taş Ustası — taşları tahtaya yerleştirin, satır ve sütunları temizleyin. Kayıt yalnızca cihazda." />
+    <title>Blok Taş Ustası</title>
+    <link rel="icon" href="icon.svg" />
+    <link rel="stylesheet" href="css/app.css?v=1" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="top">
+        <div class="brand-mini">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <h1>Blok Taş Ustası</h1>
+            <p id="level-name">Seviye 1 · Mor Tahta</p>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat"><span>Skor</span><b id="score">0</b></div>
+          <div class="stat"><span>Yıldız</span><b id="stars">0</b></div>
+        </div>
+      </header>
+      <div class="progress" aria-label="Seviye hedefi"><i id="bar"></i></div>
+      <div class="board-wrap">
+        <div id="board" class="board" aria-label="Oyun tahtası"></div>
+      </div>
+      <div class="dock">
+        <div class="boosters">
+          <button type="button" class="boost" id="b-refresh" title="Yeni el"><i>↻</i><small>Ücretsiz</small></button>
+          <button type="button" class="boost" id="b-rotate" title="Döndür"><i>⟳</i><small id="n-rotate">Ücretsiz×2</small></button>
+          <button type="button" class="boost" id="b-hammer" title="Çekiç"><i>🔨</i><small id="n-hammer">Ücretsiz×1</small></button>
+          <button type="button" class="boost" id="b-bomb" title="Bomba"><i>⬤</i><small id="n-bomb">45</small></button>
+          <button type="button" class="boost" id="b-undo" title="Geri al"><i>↩</i><small>15</small></button>
+        </div>
+        <div id="tray" class="tray"></div>
+      </div>
+      <div class="links">
+        <a href="gizlilik.html">Gizlilik</a>
+        <a href="../index.html">Portala dön</a>
+        <button type="button" class="btn" id="btn-levels" style="padding:0.2rem 0.6rem">Seviyeler</button>
+      </div>
+    </div>
+    <div id="toast" class="toast" role="status"></div>
+    <div id="ghost" class="ghost" hidden></div>
+
+    <div id="overlay" class="overlay">
+      <section class="panel" id="panel-menu">
+        <h2>Blok Taş Ustası</h2>
+        <p>Taşlar oyun düzenine göre gelir. Her seviyede renk değişir. Satır veya sütunu doldurun, tahta temizlensin.</p>
+        <div class="row">
+          <button class="btn btn--primary" id="menu-play" style="flex:1">Oyna</button>
+          <button class="btn" id="menu-levels">Seviyeler</button>
+        </div>
+      </section>
+      <section class="panel" id="panel-levels" hidden>
+        <h2>Seviye seç</h2>
+        <p>Her dünya kendi paletini ve taş sırasını taşır.</p>
+        <div id="level-grid" class="level-grid"></div>
+        <button class="btn" id="levels-back">Geri</button>
+      </section>
+      <section class="panel" id="panel-over" hidden>
+        <h2 id="over-title">Taş sığmıyor</h2>
+        <p id="over-hint">Çekiç veya yeni el deneyin, ya da bu tahtayı baştan açın.</p>
+        <div class="row">
+          <button class="btn btn--primary" id="over-deal" style="flex:1">Yeni el</button>
+          <button class="btn" id="over-retry">Yeniden</button>
+          <button class="btn" id="over-menu">Menü</button>
+        </div>
+      </section>
+      <section class="panel" id="panel-win" hidden>
+        <h2 id="win-title">Seviye tamamlandı</h2>
+        <p id="win-hint">Sonraki dünyanın taş düzeni sizi bekliyor.</p>
+        <div class="row">
+          <button class="btn btn--primary" id="win-next" style="flex:1">Sonraki</button>
+          <button class="btn" id="win-menu">Menü</button>
+        </div>
+      </section>
+    </div>
+    <script src="js/engine.js"></script>
+    <script src="js/game.js?v=1"></script>
+  </body>
+</html>
