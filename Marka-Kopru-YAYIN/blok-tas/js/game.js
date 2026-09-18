@@ -477,5 +477,15 @@
   applyTheme();
   renderBoard();
   renderHud();
-  showPanel("panel-menu");
+  (function () {
+    var m = /[?&]seviye=(\d+)/.exec(location.search || "");
+    if (!m) {
+      showPanel("panel-menu");
+      return;
+    }
+    var n = Math.max(1, Math.min(E.LEVELS.length, Number(m[1])));
+    db.campaign.unlocked = Math.max(db.campaign.unlocked || 1, n);
+    saveDb();
+    startLevel(n);
+  })();
 })();
