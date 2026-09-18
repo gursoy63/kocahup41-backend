@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#07140c" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="description"
+      content="Blok Macera Ustası — keşfet, kaz, inşa et. Tek oyunculu dünyalar cihazında saklanır."
+    />
+    <title>Blok Macera Ustası</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2307140c'/%3E%3Crect x='4' y='14' width='12' height='12' rx='2' fill='%233dcc7a'/%3E%3Crect x='12' y='8' width='12' height='12' rx='2' fill='%238b5a32'/%3E%3Crect x='16' y='14' width='12' height='12' rx='2' fill='%23e4c36a'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="css/app.css?v=7" />
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="view"></canvas>
+
+      <div id="hud" class="hud" hidden>
+        <div class="topbar">
+          <div id="hearts" class="hearts" aria-label="Can"></div>
+          <div id="crumbs" class="crumbs" aria-label="Enerji"></div>
+          <div id="rank" class="rank">Çırak</div>
+        </div>
+        <div class="crosshair" aria-hidden="true"></div>
+        <div id="hint" class="hintbar">Tıklayın — bakış kilidi · WASD hareket · Sol kaz · Sağ yerleştir</div>
+        <div id="toast" class="toast" role="status"></div>
+        <div id="debug" class="debug" hidden></div>
+        <div id="hotbar" class="hotbar"></div>
+      </div>
+
+      <div id="touch" class="touch" hidden>
+        <div id="stick" class="stick" aria-hidden="true"><i id="knob"></i></div>
+        <div id="lookpad" class="look" aria-hidden="true"></div>
+        <div class="tbtns">
+          <button type="button" class="tbtn" id="t-jump">Zıpla</button>
+          <button type="button" class="tbtn" id="t-mine">Kaz</button>
+          <button type="button" class="tbtn" id="t-place">Koy</button>
+          <button type="button" class="tbtn" id="t-inv">Çanta</button>
+        </div>
+      </div>
+
+      <div id="overlay" class="overlay">
+        <div class="shell" id="panel-menu">
+          <div class="hero">
+            <div>
+              <div class="brand">
+                <div class="logo" aria-hidden="true"><span class="a"></span><span class="b"></span><span class="c"></span></div>
+                <div>
+                  <p class="eyebrow">Rotanergy · tek oyunculu</p>
+                  <h1>Blok Macera Ustası</h1>
+                </div>
+              </div>
+              <p class="lead">
+                On iki dünyada usta olun. Her seviyede bloklar sırayla açılır, renk paleti değişir.
+                Kristalleri toplayın, sonraki dünyanın kapısını açın.
+              </p>
+              <div class="menu-actions">
+                <button class="btn btn--primary" id="btn-levels">Seviyeler <small>12 dünya · renk düzeni</small></button>
+                <button class="btn" id="btn-new">Serbest ada <small>Tohum ile açık dünya</small></button>
+                <button class="btn" id="btn-worlds">Kayıtlarım <small>Kaldığın yerden</small></button>
+                <button class="btn" id="btn-char">Kaşif <small>Ad ve renk</small></button>
+                <button class="btn" id="btn-multi">Çok oyunculu <small>Davet kodlu oda</small></button>
+                <button class="btn" id="btn-settings">Ayarlar <small>Kontrol ve ses</small></button>
+              </div>
+              <div class="footer-links">
+                <a href="gizlilik.html">Gizlilik</a>
+                <a href="../index.html">Portala dön</a>
+              </div>
+            </div>
+            <aside class="side-card">
+              <h2>Bu sürümde</h2>
+              <div class="kv">
+                <div>Düzen <b>12 seviye · her birinde yeni renk</b></div>
+                <div>Bloklar <b>Sırayla açılır</b></div>
+                <div>Kayıt <b>Yalnızca cihaz</b></div>
+                <div>Sohbet <b>Kapalı (çocuk güvenliği)</b></div>
+              </div>
+              <p class="hint" style="margin-top:1rem">
+                WASD hareket, boşluk zıpla, Shift yavaşla, E çanta, Esc menü.
+                Mobilde sol kol ve sağ bakış alanı kullanılır.
+              </p>
+            </aside>
+          </div>
+        </div>
+
+        <section class="panel inv" id="panel-levels" hidden>
+          <h2>Seviye seç</h2>
+          <p class="hint">Her dünya kendi renk paletini ve blok sırasını taşır. Kristalleri toplayınca sonraki seviye açılır.</p>
+          <div id="level-grid" class="level-grid"></div>
+          <div class="row">
+            <button class="btn btn--ghost" id="levels-back">Geri</button>
+          </div>
+        </section>
+
+        <section class="panel" id="panel-win" hidden>
+          <h2 id="win-title">Seviye tamamlandı</h2>
+          <p class="hint" id="win-hint">Sonraki dünyanın renkleri sizi bekliyor.</p>
+          <div class="pause-grid">
+            <button class="btn btn--primary" id="win-next" style="justify-content:center">Sonraki seviye</button>
+            <button class="btn" id="win-menu" style="justify-content:center">Ana menü</button>
+          </div>
+        </section>
+
+        <section class="panel" id="panel-new" hidden>
+          <h2>Yeni dünya</h2>
+          <p class="hint">Bir ad verin. Tohumu boş bırakırsanız rastgele üretilir.</p>
+          <label class="field">
+            <span>Dünya adı</span>
+            <input id="new-name" maxlength="32" placeholder="Yeşil Ada" />
+          </label>
+          <label class="field">
+            <span>Tohum</span>
+            <input id="new-seed" maxlength="24" placeholder="ör. kocaeli-41" />
+          </label>
+          <div class="row">
+            <button class="btn btn--primary" id="new-go" style="flex:1;justify-content:center">Dünyayı oluştur</button>
+            <button class="btn btn--ghost" id="new-back">Geri</button>
+          </div>
+        </section>
+
+        <section class="panel" id="panel-worlds" hidden>
+          <h2>Kayıtlı dünyalar</h2>
+          <p class="hint">Kayıtlar bu tarayıcıda tutulur; başka cihaza aktarılmaz.</p>
+          <div id="world-list" class="world-list"></div>
+          <div class="row">
+            <button class="btn btn--ghost" id="worlds-back">Geri</button>
+          </div>
+        </section>
+
+        <section class="panel" id="panel-char" hidden>
+          <h2>Kaşif</h2>
+          <p class="hint">Adınız ve el rengi yalnızca cihazda saklanır.</p>
+          <label class="field">
+            <span>Oyuncu adı</span>
+            <input id="char-name" maxlength="20" />
+          </label>
+          <div class="field">
+            <span>Renk</span>
+            <div id="char-colors" class="colors"></div>
+          </div>
+          <div class="row">
+            <button class="btn btn--primary" id="char-save" style="flex:1;justify-content:center">Kaydet</button>
+            <button class="btn btn--ghost" id="char-back">Geri</button>
+          </div>
+        </section>
+
+        <section class="panel" id="panel-settings" hidden>
+          <h2>Ayarlar</h2>
+          <label class="field">
+            <span>Fare hassasiyeti</span>
+            <input id="set-sens" type="range" min="0.4" max="2.4" step="0.05" />
+          </label>
+          <label class="field">
+            <span>Müzik</span>
+            <input id="set-music" type="range" min="0" max="1" step="0.05" />
+          </label>
+          <label class="field">
+            <span>Efekt</span>
+            <input id="set-sfx" type="range" min="0" max="1" step="0.05" />
+          </label>
+          <label class="field" style="grid-template-columns:auto 1fr;align-items:center">
+            <input id="set-invert" type="checkbox" />
+            <span>Y eksenini ters çevir</span>
+          </label>
+          <label class="field" style="grid-template-columns:auto 1fr;align-items:center">
+            <input id="set-fps" type="checkbox" />
+            <span>Koordinat / FPS göster</span>
+          </label>
+          <div class="row">
+            <button class="btn btn--primary" id="set-save" style="flex:1;justify-content:center">Tamam</button>
+          </div>
+        </section>
+
+        <section class="panel" id="panel-multi" hidden>
+          <h2>Çok oyunculu</h2>
+          <p class="hint">Tüm odalar davet kodludur. Herkese açık sohbet yoktur. Çocuk profillerinde serbest metin kapalıdır.</p>
+          <p class="note">Bağlantı <code>wss://oyun.rotanergy.com</code> üzerinden şifrelenir. Sunucu kapalıysa oda açılmaz.</p>
+          <label class="field">
+            <span>Oda kodu</span>
+            <input id="mp-code" maxlength="12" placeholder="ör. ADA-41" autocomplete="off" />
+          </label>
+          <p id="mp-msg" class="msg" role="status"></p>
+          <div class="row">
+            <button class="btn btn--primary" id="mp-go" style="flex:1;justify-content:center">Odaya bağlan</button>
+            <button class="btn btn--ghost" id="mp-back">Geri</button>
+          </div>
+        </section>
+
+        <section class="panel" id="panel-pause" hidden>
+          <h2>Duraklatıldı</h2>
+          <p class="hint">Dünya otomatik kaydedilir.</p>
+          <div class="pause-grid">
+            <button class="btn btn--primary" id="pause-resume" style="justify-content:center">Devam et</button>
+            <button class="btn" id="pause-inv" style="justify-content:center">Çanta ve üretim</button>
+            <button class="btn" id="pause-help" style="justify-content:center">Kontroller</button>
+            <button class="btn" id="pause-save" style="justify-content:center">Kaydet ve menü</button>
+          </div>
+        </section>
+
+        <section class="panel" id="panel-help" hidden>
+          <h2>Kontroller</h2>
+          <div class="kv">
+            <div>Hareket <b>W A S D</b></div>
+            <div>Zıpla / yavaş <b>Boşluk / Shift</b></div>
+            <div>Kaz / koy <b>Sol / sağ tık</b></div>
+            <div>Çanta <b>E</b></div>
+            <div>Kısayol <b>1–9</b></div>
+            <div>Menü <b>Esc</b></div>
+          </div>
+          <p class="hint" style="margin-top:1rem">
+            Hedef: o seviyenin kristallerini toplayın. Bloklar seviye düzenine göre gelir; renk her dünyada değişir.
+          </p>
+          <div class="row">
+            <button class="btn btn--primary" id="help-back" style="flex:1;justify-content:center">Tamam</button>
+          </div>
+        </section>
+
+        <section class="panel inv" id="panel-inv" hidden>
+          <h2>Çanta ve üretim</h2>
+          <p class="hint">Hızlı üretim, elinizdeki malzemeye göre açılır. Öğeyi seçmek için slota tıklayın.</p>
+          <div id="inv-grid" class="inv-grid"></div>
+          <h3 style="margin:0 0 0.5rem;font-size:1rem">Hızlı üretim</h3>
+          <div id="recipes" class="recipes"></div>
+          <div class="row">
+            <button class="btn btn--primary" id="inv-close" style="flex:1;justify-content:center">Kapat</button>
+          </div>
+        </section>
+
+        <section class="panel" id="panel-load" hidden>
+          <h2>Dünya hazırlanıyor</h2>
+          <p class="hint" id="load-hint">Arazi, mağaralar ve anıt yerleştiriliyor…</p>
+          <div style="height:10px;background:#0a1a11;border-radius:99px;overflow:hidden;margin-top:1rem">
+            <div id="load-bar" style="height:100%;width:8%;background:linear-gradient(90deg,#3dcc7a,#e4c36a)"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+    <script src="vendor/three.min.js"></script>
+    <script src="js/game.js?v=7"></script>
+  </body>
+</html>

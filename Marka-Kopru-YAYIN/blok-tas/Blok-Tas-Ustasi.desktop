@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Blok Taş Ustası
+Comment=Taşları yerleştir, satır ve sütun temizle
+Exec=/workspace/blok-tas/OYUNU-AC.sh
+Icon=/workspace/blok-tas/icon.png
+Path=/workspace/blok-tas
+Terminal=false
+Categories=Game;
+StartupNotify=true

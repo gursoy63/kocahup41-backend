@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Blok Macera Ustası
+Comment=Keşfet, kaz, inşa et
+Exec=/workspace/blok-macera/OYUNU-AC.sh
+Icon=/workspace/blok-macera/icon.png
+Path=/workspace/blok-macera
+Terminal=false
+Categories=Game;
+StartupNotify=true
